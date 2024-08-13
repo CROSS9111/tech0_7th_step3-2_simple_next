@@ -18,5 +18,6 @@ async function getProductCode() {
 
 export default function Home() {
     const res = getProductCode();
-    console.log(res)
+    // console.logにはPromiseが表示され、その中に取得情報が記載されている
+    console.log(res);
 }

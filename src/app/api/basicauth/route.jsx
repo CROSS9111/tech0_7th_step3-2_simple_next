@@ -10,16 +10,9 @@ export async function GET(request) {
     // Authorizationヘッダーを取得
     const authHeader = request.headers.get('authorization');
 
-    if (!authHeader) {
-        return new NextResponse('Unauthorized', { 
-            status: 401, 
-            headers: { 'WWW-Authenticate': `Basic realm="${realm || 'Login Required'}"` } 
-        });
-    }
-
     try {
         // `http://127.0.0.1:5000/api/admin`にリクエストを送信
-        const response = await fetch('http://127.0.0.1:5000/api/admin', {
+        const response = await fetch(`http://127.0.0.1:5000/api/${path}`, {
             method: 'GET',
             headers: {
                 'Authorization': authHeader  // クライアントからの認証情報をそのまま転送
@@ -30,9 +23,10 @@ export async function GET(request) {
             const data = await response.json(); // JSONレスポンスを取得
             return new NextResponse(JSON.stringify(data), { status: 200 });
         } else {
+            const wwwAuthenticateHeader = response.headers.get('WWW-Authenticate');
             return new NextResponse('Unauthorized', { 
-                status: 401, 
-                headers: { 'WWW-Authenticate': `Basic realm="${realm}"` } 
+                status: response.status, 
+                headers: { 'WWW-Authenticate': wwwAuthenticateHeader } 
             });
         }
     } catch (error) {
@@ -41,3 +35,9 @@ export async function GET(request) {
     }
 }
 
+// if (!authHeader) {
+    //     return new NextResponse('Unauthorized', { 
+    //         status: 401, 
+    //         headers: { 'WWW-Authenticate': `Basic realm="${realm}"` } 
+    //     });
+    // }
